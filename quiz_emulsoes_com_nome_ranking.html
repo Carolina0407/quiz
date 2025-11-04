@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Quiz sobre Emulsões</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .question { margin-bottom: 20px; }
+        .ranking { margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <h1>Quiz sobre Emulsões</h1>
+    <form id="quizForm">
+        <label for="playerName">Digite seu nome:</label><br>
+        <input type="text" id="playerName" name="playerName" required><br><br>
+
+        <div class="question">
+            <p>1. O que é uma emulsão?</p>
+            <input type="radio" name="q1" value="b"> Mistura de dois líquidos que não se combinam naturalmente<br>
+            <input type="radio" name="q1" value="a"> Mistura de sólidos<br>
+            <input type="radio" name="q1" value="c"> Mistura de gases<br>
+        </div>
+
+        <div class="question">
+            <p>2. Qual ingrediente é essencial para manter a estabilidade de uma emulsão?</p>
+            <input type="radio" name="q2" value="b"> Emulsificante<br>
+            <input type="radio" name="q2" value="a"> Conservante<br>
+            <input type="radio" name="q2" value="c"> Corante<br>
+        </div>
+
+        <div class="question">
+            <p>3. Qual tipo de emulsão é mais leve e usada em loções?</p>
+            <input type="radio" name="q3" value="b"> O/A (Óleo em Água)<br>
+            <input type="radio" name="q3" value="a"> A/O (Água em Óleo)<br>
+            <input type="radio" name="q3" value="c"> Nenhuma das anteriores<br>
+        </div>
+
+        <div class="question">
+            <p>4. Qual fase geralmente contém água, glicerina e sais?</p>
+            <input type="radio" name="q4" value="b"> Fase aquosa<br>
+            <input type="radio" name="q4" value="a"> Fase oleosa<br>
+            <input type="radio" name="q4" value="c"> Fase sólida<br>
+        </div>
+
+        <div class="question">
+            <p>5. Qual equipamento pode ser usado para agitar e formar uma emulsão?</p>
+            <input type="radio" name="q5" value="d"> Todas as anteriores<br>
+            <input type="radio" name="q5" value="a"> Hélice<br>
+            <input type="radio" name="q5" value="b"> Turbina<br>
+            <input type="radio" name="q5" value="c"> Âncora<br>
+        </div>
+
+        <div class="question">
+            <p>6. O leite materno é um exemplo de emulsão natural?</p>
+            <input type="radio" name="q6" value="a"> Sim<br>
+            <input type="radio" name="q6" value="b"> Não<br>
+        </div>
+
+        <div class="question">
+            <p>7. Qual dessas opções é uma emulsão caseira comum?</p>
+            <input type="radio" name="q7" value="b"> Maionese<br>
+            <input type="radio" name="q7" value="a"> Refrigerante<br>
+            <input type="radio" name="q7" value="c"> Café<br>
+        </div>
+
+        <div class="question">
+            <p>8. O que pode indicar que uma emulsão está se separando?</p>
+            <input type="radio" name="q8" value="b"> Presença de bolhas de ar e pigmentos de tamanhos diferentes<br>
+            <input type="radio" name="q8" value="a"> Textura uniforme<br>
+            <input type="radio" name="q8" value="c"> Cheiro forte<br>
+        </div>
+
+        <div class="question">
+            <p>9. Mais de quantos por cento dos produtos cosméticos são emulsões?</p>
+            <input type="radio" name="q9" value="c"> 70%<br>
+            <input type="radio" name="q9" value="a"> 30%<br>
+            <input type="radio" name="q9" value="b"> 50%<br>
+        </div>
+
+        <div class="question">
+            <p>10. Qual é a função do cisalhamento no processo de emulsificação?</p>
+            <input type="radio" name="q10" value="b"> Misturar os ingredientes com força para formar a emulsão<br>
+            <input type="radio" name="q10" value="a"> Colorir o produto<br>
+            <input type="radio" name="q10" value="c"> Esfriar a mistura<br>
+        </div>
+
+        <button type="submit">Enviar</button>
+        <button type="button" onclick="resetQuiz()">Reiniciar</button>
+        <button type="button" onclick="clearRanking()">Limpar Ranking</button>
+    </form>
+
+    <div class="ranking">
+        <h2>Ranking - Top 20</h2>
+        <ol id="rankingList"></ol>
+    </div>
+
+    <script>
+        const correctAnswers = {
+            q1: "b", q2: "b", q3: "b", q4: "b", q5: "d",
+            q6: "a", q7: "b", q8: "b", q9: "c", q10: "b"
+        };
+
+        document.getElementById("quizForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const form = e.target;
+            const name = form.playerName.value.trim();
+            if (!name) return alert("Digite seu nome!");
+
+            let score = 0;
+            for (let q in correctAnswers) {
+                const selected = form[q].value;
+                if (selected === correctAnswers[q]) score++;
+            }
+
+            const ranking = JSON.parse(localStorage.getItem("quizRanking") || "[]");
+            ranking.push({ name, score, date: new Date().toLocaleString() });
+            ranking.sort((a, b) => b.score - a.score);
+            localStorage.setItem("quizRanking", JSON.stringify(ranking.slice(0, 20)));
+            updateRanking();
+            alert(`Você acertou ${score} de 10!`);
+        });
+
+        function updateRanking() {
+            const ranking = JSON.parse(localStorage.getItem("quizRanking") || "[]");
+            const list = document.getElementById("rankingList");
+            list.innerHTML = "";
+            ranking.forEach(entry => {
+                const li = document.createElement("li");
+                li.textContent = `${entry.name} - ${entry.score}/10 (${entry.date})`;
+                list.appendChild(li);
+            });
+        }
+
+        function resetQuiz() {
+            document.getElementById("quizForm").reset();
+        }
+
+        function clearRanking() {
+            localStorage.removeItem("quizRanking");
+            updateRanking();
+        }
+
+        updateRanking();
+    </script>
+</body>
+</html>
